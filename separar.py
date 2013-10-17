@@ -1,4 +1,5 @@
 # coding: utf-8
+import langid
 
 class Separar(object):
 
@@ -14,7 +15,9 @@ class Separar(object):
             linha = stream_origem.readline()
             while linha:
                 if qtd < self.tamanho:
-                    stream_destino.write(linha)
+                    texto = linha.split(',')[3]
+                    idioma = langid.classify(texto)
+                    stream_destino.write(idioma[0] + ',' + linha)
                     qtd += 1
                     linha = stream_origem.readline()
                 else:
