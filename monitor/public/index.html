@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monitor de Treino do NoSpam</title>
+    <link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/monitor/style.css">
+</head>
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">NoSpam</a>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="geral">
+    <div id="contadores">
+
+    </div>
+</div>
+
+<script type="text/template" id="template-contador">
+    <h2><%= model.id %></h2>
+    <ul>
+        <li>
+            Total: <%= model.qtd %>
+        </li>
+        <li>
+            Com Link: <%= model.com_link %>
+        </li>
+        <li>
+            Sem Link: <%= model.sem_link %>
+        </li>
+    </ul>
+</script>
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="/libs/underscore.js"></script>
+<script src="/libs/backbone.js"></script>
+<script src="/libs/bootstrap/js/bootstrap.js"></script>
+
+<script src="/monitor/model.js"></script>
+<script src="/monitor/collection.js"></script>
+<script src="/monitor/view.js"></script>
+<script src="/monitor/app.js"></script>
+
+</html>
