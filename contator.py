@@ -34,7 +34,7 @@ class Contadores(object):
         else:
             self.sem_link += 1
 
-        if self.qtd % 1000 == 0:
+        if self.qtd % 50000 == 0:
             logger.debug(self)
 
         if self.conectado:

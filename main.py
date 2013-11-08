@@ -12,11 +12,15 @@ def main():
         configuracao.DATASET_COMPLETO,
         configuracao.DATASET_TREINO,
     )
-    separar.rodar()
+    #separar.rodar()
+
+
+
+
     logger.info("Finalizou")
 
 
 if __name__ == '__main__':
-    preparar.apagar_temporarios(configuracao.DATASET_TREINO)
+    #preparar.apagar_temporarios(configuracao.DATASET_TREINO)
     preparar.log(configuracao.LOGGING)
     main()
