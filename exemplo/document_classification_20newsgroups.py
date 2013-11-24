@@ -31,6 +31,8 @@ from sklearn import metrics
 
 
 # Display progress logs on stdout
+from classificacao import Classificacao
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 
@@ -94,6 +96,7 @@ else:
 print("Loading 20 newsgroups dataset for categories:")
 print(categories if categories else "all")
 
+"""
 data_train = fetch_20newsgroups(subset='train', categories=categories,
                                 shuffle=True, random_state=42,
                                 remove=remove)
@@ -101,6 +104,10 @@ data_train = fetch_20newsgroups(subset='train', categories=categories,
 data_test = fetch_20newsgroups(subset='test', categories=categories,
                                shuffle=True, random_state=42,
                                remove=remove)
+
+"""
+data_train, data_test = Classificacao().rodar('it')
+
 print('data loaded')
 
 categories = data_train.target_names    # for case categories == None

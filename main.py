@@ -1,5 +1,6 @@
 # coding: utf-8
 import logging
+from classificacao import Classificacao
 import configuracao
 import preparar
 from separar import Separar
@@ -14,7 +15,8 @@ def main():
     )
     #separar.rodar()
 
-
+    classificar = Classificacao()
+    classificar.rodar('it')
 
 
     logger.info("Finalizou")
