@@ -15,7 +15,7 @@ class Classificar(object):
 
 class Classificacao(object):
 
-    def rodar(self, idioma):
+    def rodar(self, idioma, matriz=False):
         preparado_caminho = os.path.join(configuracao.DATASET_PREPARADO, idioma + '.csv')
         comentarios = []
         ehspam = []
@@ -39,6 +39,16 @@ class Classificacao(object):
         teste.data = comentarios_teste
         teste.target = ehspam_teste
         teste.target_names = (True, False)
+
+        if matriz:
+            logger.info("Criando Matriz")
+            vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
+                                 stop_words='english')
+            treino.data = vectorizer.fit_transform(treino.data)
+            logger.info("Matriz de treino criada")
+
+            teste.data = vectorizer.fit_transform(teste.data)
+            logger.info("Matriz de teste criada")
 
         return treino, teste
 
