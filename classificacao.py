@@ -27,7 +27,7 @@ class Classificacao(object):
                 comentarios.append(linha[5].decode('utf-8'))
                 ehspam.append(linha[6] == "True")
 
-        comentarios_treino, comentarios_teste, ehspam_treino, ehspam_teste = train_test_split(comentarios, ehspam)
+        comentarios_treino, comentarios_teste, ehspam_treino, ehspam_teste = train_test_split(comentarios, ehspam, train_size=0.5, test_size=0.5)
 
         treino = Classificar()
 
@@ -42,12 +42,11 @@ class Classificacao(object):
 
         if matriz:
             logger.info("Criando Matriz")
-            vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
-                                 stop_words='english')
+            vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5)
             treino.data = vectorizer.fit_transform(treino.data)
             logger.info("Matriz de treino criada")
 
-            teste.data = vectorizer.fit_transform(teste.data)
+            teste.data = vectorizer.transform(teste.data)
             logger.info("Matriz de teste criada")
 
         return treino, teste
