@@ -1,6 +1,7 @@
 # coding: utf-8
 import logging
-from sklearn import metrics, svm
+import scipy
+from sklearn import metrics, svm, linear_model, naive_bayes, pipeline, grid_search
 from classificacao import Classificacao
 import configuracao
 import preparar
@@ -24,7 +25,7 @@ class L1LinearSVC(svm.LinearSVC):
         return svm.LinearSVC.predict(self, X)
 
 def main():
-    logger.info("iniciando")
+    logger.info("_" * 30 + 'NOVA RODADA' + "_" * 30)
     separar = Separar(
         configuracao.DATASET_COMPLETO,
         configuracao.DATASET_TREINO,
@@ -32,42 +33,51 @@ def main():
     #separar.rodar()
 
     classificar = Classificacao()
-    treino, teste = classificar.rodar('pt', matriz=True)
+    treino, teste = classificar.rodar('pt', matriz=True, balancear=True)
 
-    logger.info("dados carregados")
+    logger.debug("dados carregados")
 
-    algoritimo = svm.LinearSVC()
-    benchmark(algoritimo, treino, teste)
+    #best_score(treino)
+
+    for algoritimo in (
+        linear_model.SGDClassifier(loss='hinge', shuffle=True),
+        linear_model.Perceptron(),
+        svm.LinearSVC(),
+    ):
+        benchmark(algoritimo, treino, teste)
+
+    logger.debug("Finalizou")
 
 
-    logger.info("Finalizou")
+def best_score(treino):
+    tuned_parameters = {
+        'loss': ['hinge'],
+        'power_t': scipy.stats.expon(scale=.01),
+    }
+
+    clf = grid_search.RandomizedSearchCV(linear_model.SGDClassifier(), tuned_parameters, scoring='accuracy', n_iter=50)
+    clf.fit(treino.data, treino.target)
+    print(clf.best_estimator_)
+    for params, mean_score, scores in sorted(clf.grid_scores_, key=lambda x: x[1]):
+        print("%0.3f (+/-%0.03f) for %r" % (mean_score, scores.std() / 2, params))
+
+    exit()
 
 
 
 def benchmark(clf, treino, teste):
-    print('_' * 80)
-    print("Training: ")
-    print(clf)
-    print("treino n_samples: %d, n_features: %d" % treino.data.shape)
-    print("teste n_samples: %d, n_features: %d" % teste.data.shape)
+    logger.info('ALGORITMO: %s', clf)
+    logger.info("DATASET: treino: %d, teste:%d n_features: %d", treino.data.shape[0], teste.data.shape[0], teste.data.shape[1])
     t0 = time()
     clf.fit(treino.data, treino.target)
     train_time = time() - t0
-    print("train time: %0.3fs" % train_time)
-
-
-
     t0 = time()
     pred = clf.predict(teste.data)
     test_time = time() - t0
-    print("test time:  %0.3fs" % test_time)
-
-    score = metrics.f1_score(teste.target, pred)
-    print("f1-score:   %0.3f" % score)
-
-    print()
-    clf_descr = str(clf).split('(')[0]
-    return clf_descr, score, train_time, test_time
+    logger.info("TEMPO: treino: %0.3fs teste: %0.3fs", train_time, test_time)
+    for metric_method in ('accuracy_score', 'precision_score', 'recall_score', 'f1_score', 'confusion_matrix',):
+        score = getattr(metrics, metric_method)(teste.target, pred)
+        logger.info("%s: %s", metric_method, score)
 
 if __name__ == '__main__':
     #preparar.apagar_temporarios(configuracao.DATASET_TREINO)

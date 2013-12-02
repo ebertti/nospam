@@ -24,10 +24,16 @@ LOGGING = {
             'formatter': 'standard',
             'class': 'logging.StreamHandler',
         },
+        'arquivo': {
+            'level': 'INFO',
+            'formatter': 'standard',
+            'class': 'logging.FileHandler',
+            'filename': "logfile.log",
+        },
     },
 
     'root': {
-        'handlers': ['default'],
+        'handlers': ['default', 'arquivo'],
         'level': 'NOTSET',
         'propagate': True
     }
