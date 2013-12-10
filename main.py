@@ -3,6 +3,7 @@ import logging
 import scipy
 from sklearn import metrics, svm, linear_model, naive_bayes, pipeline, grid_search
 from classificacao import Classificacao
+from classificacao_crua import ClassificacaoCrua
 import configuracao
 import preparar
 from separar import Separar
@@ -33,14 +34,14 @@ def main():
     #separar.rodar()
 
     classificar = Classificacao()
-    treino, teste = classificar.rodar('pt', matriz=True, balancear=True)
+    treino, teste = classificar.rodar('es', matriz=True,)
 
     logger.debug("dados carregados")
 
     #best_score(treino)
 
     for algoritimo in (
-        linear_model.SGDClassifier(loss='hinge', shuffle=True),
+        linear_model.SGDClassifier(),
         linear_model.Perceptron(),
         svm.LinearSVC(),
     ):

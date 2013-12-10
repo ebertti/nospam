@@ -5,6 +5,7 @@ import os
 import re
 from sklearn.cross_validation import train_test_split
 from sklearn.feature_extraction import text
+from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 import configuracao
 
 logger = logging.getLogger()
@@ -371,7 +372,7 @@ stopwords = set([text.strip_accents_ascii(w) for w in stopwords])
 class Classificar(object):
     pass
 
-
+import hashlib
 class Classificacao(object):
 
     def rodar(self, idioma, matriz=False, balancear=False):
@@ -382,13 +383,26 @@ class Classificacao(object):
         ehspam = []
         logger.debug("abrindo arquivo")
 
+        set_spam = set()
         with open(preparado_caminho, 'r') as preparado_origem:
             leitor = csv.reader(preparado_origem)
             for linha in leitor:
                 if linha[6] == "True":
-                    tuplas_ehspam.append(linha[5].decode('utf-8'))
+                    tuplas_ehspam.append(linha[5])
+                    set_spam.add(hashlib.md5(linha[5]).hexdigest())
                 else:
-                    tuplas_nao_ehspam.append(linha[5].decode('utf-8'))
+                    tuplas_nao_ehspam.append(linha[5])
+
+            remover = []
+
+            for comentario in tuplas_nao_ehspam:
+                if hashlib.md5(comentario).hexdigest() in set_spam:
+                    remover.append(comentario)
+
+            logger.info('spans nao marcados: %s', len(remover))
+            for comentario in remover:
+                tuplas_nao_ehspam.remove(comentario)
+                tuplas_ehspam.append(comentario)
 
         qtd = len(tuplas_ehspam)
         if balancear:
@@ -422,6 +436,7 @@ class Classificacao(object):
                  stop_words=stopwords,
                  tokenizer=tokanaizer,
                  lowercase=True,
+                 min_df=3,
             )
             treino.data = vectorizer.fit_transform(treino.data)
             logger.debug("Matriz de treino criada")
